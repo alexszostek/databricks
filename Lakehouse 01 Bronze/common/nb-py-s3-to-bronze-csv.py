@@ -82,12 +82,6 @@ source_catalog = 'rocket_mortgage_catalog'
 source_object = dbutils.widgets.get("source_object")
 source_system = dbutils.widgets.get("source_system")
 
-# Define the source path for the CSV files
-src_path = f"/Volumes/{source_catalog}/raw/queue/{source_system}/{source_object}/queue/"
-
-# Read the CSV files into a DataFrame
-df = spark.read.option("header", "true").option("inferSchema", "true").csv(src_path)
-
 # Define the table name for the bronze layer
 table_name = source_catalog + '.01_bronze.' + source_system + '_' + source_object
 

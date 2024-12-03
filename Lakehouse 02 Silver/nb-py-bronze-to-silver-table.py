@@ -102,20 +102,6 @@ except Exception as e:
         select * from vw_src
         """
     spark.sql(sql_command)
-    update_sql = f"""
-        ALTER TABLE {trg}
-        ADD COLUMNS (
-            etlInsertBatchID STRING,
-            recordInsertDateTimeUTC TIMESTAMP,
-            recordInsertUserName STRING,
-            recordUpdateDateTimeUTC TIMESTAMP,
-            etlUpdateBatchID STRING,
-            recordUpdateUserName STRING,
-            currentRecordInd INT
-        )
-    """
-    spark.sql(update_sql)
-
     dbutils.notebook.exit("Table Created")
 
 # COMMAND ----------
@@ -123,8 +109,8 @@ except Exception as e:
 # DBTITLE 1,Check and Update Table Schema with New Columns
 # Check if the table exists
 table_exists = True
-target_table = '`02_silver`.test_customer'
-source_table = '`01_bronze`.test_customer'
+target_table = f'`02_silver`.{source_system}_{source_object}'
+source_table = f'`01_bronze`.{source_system}_{source_object}'
 
 # If the table exists, check for schema mismatch
 if table_exists:
