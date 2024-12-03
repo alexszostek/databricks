@@ -46,6 +46,13 @@ sort_key = dbutils.widgets.get("sort_key")
 
 # COMMAND ----------
 
+# MAGIC %md
+# MAGIC ### Summary of the Cell
+# MAGIC
+# MAGIC The cell constructs source and target table names using the `source_system` and `source_object` widget values. It retrieves the `sort_key` and `primary_key` values from widgets. A SQL command is created to select records with `newRecordInd = 1` from the source table. The resulting DataFrame is filtered to remove specific columns: `currentRecordInd`, `recordInsertDateTimeUTC`, `recordInsertUserName`, `recordUpdateDateTimeUTC`, `recordUpdateUserName`, `newRecordInd`, and `etlInsertBatchID`.
+
+# COMMAND ----------
+
 
 src = 'rocket_mortgage_catalog.01_bronze.' +dbutils.widgets.get("source_system") + "_" + dbutils.widgets.get("source_object")
 trg = 'rocket_mortgage_catalog.02_silver.' + dbutils.widgets.get("source_system") + "_" + dbutils.widgets.get("source_object")
@@ -225,8 +232,3 @@ where newRecordInd = 1
 """
 
 spark.sql(sql_command)
-
-# COMMAND ----------
-
-# MAGIC %sql
-# MAGIC select * from `02_silver`.test_customer
