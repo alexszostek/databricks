@@ -42,7 +42,7 @@ source_catalog = 'rocket_mortgage_catalog'
 source_object = dbutils.widgets.get("source_object")
 source_system = dbutils.widgets.get("source_system")
 src_path = f"/Volumes/{source_catalog}/raw/queue/{source_system}/{source_object}/queue/"
-df = spark.read.option("header", "true").option("inferSchema", "true").csv(src_path)
+df = spark.read.option("header", "true").option("inferSchema", "true").parquet(src_path)
 table_name = source_catalog + '.01_bronze.' + source_system + '_' + source_object
 
 # COMMAND ----------
