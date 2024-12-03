@@ -1,6 +1,6 @@
 # Databricks notebook source
 # MAGIC %sql
-# MAGIC 
+# MAGIC
 # MAGIC use bronze
 
 # COMMAND ----------

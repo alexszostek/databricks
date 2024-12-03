@@ -63,16 +63,16 @@ display(dfsrc)
 # MAGIC merge into gold.recordtypedim as trg
 # MAGIC using integrate_rocketautosalesforcerecordtype as src
 # MAGIC on trg.RecordTypeId = src.Mergekey
-# MAGIC 
+# MAGIC
 # MAGIC --------///UPDATE//--------
 # MAGIC when matched and trg.RecordCheckSumNumber <> src.RecordCheckSumNumber
 # MAGIC then update set
-# MAGIC 
+# MAGIC
 # MAGIC --trg.RecordTypeSK                    = src.RecordTypeSK         
 # MAGIC  trg.RecordExpirationDateTime         =  current_timestamp()
 # MAGIC ,trg.RecordUpdateDateTime             =  current_timestamp() --date_format(current_timestamp(),'yyyy-mm-dd HH:mm:ss' )--src.RecordUpdateDateTime 
 # MAGIC ,trg.IsCurrentRecordInd               = 'false'
-# MAGIC 
+# MAGIC
 # MAGIC --------///INSERT//--------
 # MAGIC when not matched then insert 
 # MAGIC (

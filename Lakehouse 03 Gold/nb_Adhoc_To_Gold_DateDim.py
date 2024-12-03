@@ -35,17 +35,17 @@ df_Read.createOrReplaceTempView("vw_DateDim")
 # COMMAND ----------
 
 # MAGIC %sql 
-# MAGIC 
+# MAGIC
 # MAGIC /* Display Data in Silver table */
-# MAGIC 
+# MAGIC
 # MAGIC select * from vw_DateDim
 
 # COMMAND ----------
 
 # MAGIC %sql
-# MAGIC 
+# MAGIC
 # MAGIC /* Upsert Data into Silver layer */
-# MAGIC 
+# MAGIC
 # MAGIC MERGE INTO gold.DateDim AS TARGET
 # MAGIC USING vw_DateDim AS SOURCE
 # MAGIC ON TARGET.DateSK = SOURCE.DateSk
