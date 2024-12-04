@@ -99,7 +99,27 @@ def get_file_count(input_path):
 def get_modification_time(file_path):
     file_info = dbutils.fs.ls(file_path)
     modification_time = file_info[0].modificationTime
-    return datetime.utcfromtimestamp(modification_time / 1000)
+    return datetime.utcfromtimestamp(modification_time / 1000).strftime('%Y-%m-%d %H:%M:%S.%f')
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC ### File Processing and Data Ingestion
+# MAGIC
+# MAGIC This cell performs the following tasks:
+# MAGIC 1. Defines source and destination paths for file processing.
+# MAGIC 2. Checks if the source path exists and retrieves the list of files.
+# MAGIC 3. Moves files from the source to the destination directory.
+# MAGIC 4. Reads the files into a Spark DataFrame and adds metadata columns.
+# MAGIC 5. Checks if the target table exists in the database.
+# MAGIC 6. If the table exists, it ensures the schema matches the DataFrame and adds any new columns.
+# MAGIC 7. Inserts the data from the DataFrame into the target table.
+# MAGIC
+# MAGIC Key functions used:
+# MAGIC - `get_file_count(input_path)`: Returns the count of files in a given directory.
+# MAGIC - `get_modification_time(file_path)`: Returns the modification time of a file.
+# MAGIC
+# MAGIC The cell ensures data integrity by adding checksum and metadata columns, and handles schema evolution by adding new columns to the table if necessary.
 
 # COMMAND ----------
 
@@ -121,11 +141,18 @@ for file in file_list:
 if get_file_count(dest_path) == 0:
     dbutils.notebook.exit("No files found in the directory")
 
-df = spark.read.option("header", "true").option("inferSchema", "true").csv(f"/Volumes/rocket_mortgage_catalog/00_raw/ingestion/{source_system}/{source_object}/processing/")
+# add filepath
+df = spark.read.option("header", "true").option("inferSchema", "true").csv([file.path for file in dbutils.fs.ls(f"/Volumes/rocket_mortgage_catalog/00_raw/ingestion/{source_system}/{source_object}/processing/")])
+df = df.withColumn("fileName", df["_metadata.file_path"])
+
+# Add modification time for each file
+modification_times = [get_modification_time(file.path) for file in dbutils.fs.ls(f"/Volumes/rocket_mortgage_catalog/00_raw/ingestion/{source_system}/{source_object}/processing/")]
+modification_times_df = spark.createDataFrame(zip([file.path for file in dbutils.fs.ls(f"/Volumes/rocket_mortgage_catalog/00_raw/ingestion/{source_system}/{source_object}/processing/")], modification_times), ["file_path", "fileModicationTime"])
 
 
 # Add MD5 column that checks all incoming fields
 df = df.withColumn("recordChecksumNumber", md5(concat_ws("||", *df.columns)))
+df = df.join(modification_times_df, df["_metadata.file_path"] == modification_times_df["file_path"], "left").drop("file_path")
 
 # Add default metadata column 
 df = df.withColumn("currentRecordInd", lit(1)) \

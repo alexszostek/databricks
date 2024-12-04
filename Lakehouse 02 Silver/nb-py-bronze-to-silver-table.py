@@ -218,3 +218,8 @@ where newRecordInd = 1
 """
 
 spark.sql(sql_command)
+
+# COMMAND ----------
+
+# MAGIC %sql
+# MAGIC select * from `02_silver`.tpch_partsupp
