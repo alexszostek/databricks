@@ -36,6 +36,7 @@ dbutils.widgets.text("source_system","")
 dbutils.widgets.text("source_object", "")
 dbutils.widgets.text("primary_key", "")
 dbutils.widgets.text("sort_key", "")
+dbutils.widgets.dropdown("skip_ind", "false", ["true", "false"], "Skip Indicator")
 
 # COMMAND ----------
 
